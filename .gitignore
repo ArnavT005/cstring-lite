@@ -1,0 +1,10 @@
+# OS related files
+**/.DS_Store
+
+# Cache and build files
+/.cache/
+/build/
+
+# Environment files
+/.vscode/
+/compile_commands.json

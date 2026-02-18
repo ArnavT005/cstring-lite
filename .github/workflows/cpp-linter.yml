@@ -1,0 +1,42 @@
+name: cpp-linter
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.24.x'
+    - name: Configure CMake
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DTULI_ENV_BUILD_TESTS=TRUE
+        -S ${{ github.workspace }}
+    - name: Build
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+    - name: Run cpp-linter
+      uses: cpp-linter/cpp-linter-action@v2
+      id: linter
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        style: 'file'
+        tidy-checks: ''
+        thread-comments: ${{ github.event_name == 'pull_request' && 'update' || 'false' }} 
+    - name: Fail fast if checks failed
+      if: steps.linter.outputs.checks-failed > 0
+      run: exit 1
