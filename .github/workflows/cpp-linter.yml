@@ -26,8 +26,8 @@ jobs:
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DTULI_ENV_BUILD_TESTS=TRUE
         -S ${{ github.workspace }}
-    - name: Build
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+    - name: Copy compile_commands.json
+      run: cp ${{ steps.strings.outputs.build-output-dir }}/compile_commands.json ${{ github.workspace }}
     - name: Run cpp-linter
       uses: cpp-linter/cpp-linter-action@v2
       id: linter
