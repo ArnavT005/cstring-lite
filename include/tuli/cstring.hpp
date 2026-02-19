@@ -60,7 +60,7 @@ class cstring {  // NOLINT(cppcoreguidelines-special-member-functions)
     [[nodiscard]] const char* c_str() const noexcept { return m_str.get(); }
 
     [[nodiscard]] operator std::string_view() const {
-        return std::string_view{m_str.get()};
+        return std::string_view{m_str.get(), m_length};
     }
 
   private:
