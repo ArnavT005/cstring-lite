@@ -192,3 +192,18 @@ std::string_view (null-terminated) says hello!
 std::string says hello!
 Examples ran successfully.
 ```
+
+## Related Works and Discussion
+
+### cstring_view
+A number of proposals have been made to introduce a null-terminated `cstring_view` type in the C++ standard library. These include the following: 
+- [P1402R0](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1402r0.pdf): std::cstring_view - a C compatible std::string_view adapter (*rejected*)
+- [P3655R3](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2025/p3655r3.html): std::cstring_view (proposed for inclusion in *C++29*)
+
+Implementations for the same can also be found on GitHub [here](https://github.com/breyerml/cstring_view) and [here](https://github.com/bemanproject/cstring_view). Though these solve the null-termination issue in similar ways, the definition of `cstring_view` class in above works is quite extensive given that most of the functionalities can be simply achieved via an implicit conversion to `std::string_view`. This seems rather unnecessary as such a type should ideally not substitute the use of `std::string_view` in C++ code, but only used when necessary (at the C/C++ boundary).
+
+### cstring
+`tuli::cstring<Deleter>` is essentially a one-to-one wrapper over `std::unique_ptr<char, Deleter>`, so a `std::unique_ptr` can, in theory, replace the usage of `tuli::cstring`. However, `tuli::cstring` offers some semantic advantages over `std::unique_ptr`:
+
+- `tuli::cstring` makes the programmer's intention clear to the reader and is more expressive. `std::unique_ptr` implementation can possibly lead to errors if not used carefully.
+- `tuli::cstring` provides implicit conversion to `std::string_view`, which makes performing string operations on the returned `char*` string smoother and less error-prone.
