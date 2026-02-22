@@ -30,6 +30,17 @@ TEST(CStringViewTest, FromCString) {
     static_assert(csv == std::string_view{s});
 }
 
+TEST(CStringViewTest, FromNullTerminatedCStringAndLen) {
+    constexpr auto s{"Hello, World!"};
+    constexpr auto len{tests::strlen(s)};
+    constexpr tuli::cstring_view csv{tuli::null_terminated, s, len};
+
+    static_assert(csv.length() == len);
+    static_assert(!csv.is_empty());
+    static_assert(tests::strcmp(csv.c_str(), s));
+    static_assert(csv == std::string_view{s});
+}
+
 TEST(CStringViewTest, FromNullTerminatedStringView) {
     constexpr auto sv{"Hello, World!"sv};
     constexpr tuli::cstring_view csv{tuli::null_terminated, sv};

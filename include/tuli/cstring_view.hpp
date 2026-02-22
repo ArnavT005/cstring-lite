@@ -23,6 +23,12 @@ class cstring_view {
                "tuli::cstring_view cannot be constructed from nullptr");
     }
 
+    constexpr cstring_view(null_terminated_t, const char* s, std::size_t len)
+        : m_sv{s, len} {
+        assert(m_sv.data() != nullptr &&
+               "tuli::cstring_view cannot be constructed from nullptr");
+    }
+
     constexpr cstring_view(null_terminated_t, std::string_view sv) noexcept
         : m_sv{sv.data() ? sv : ""} {}
 
