@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -61,6 +62,10 @@ class cstring {  // NOLINT(cppcoreguidelines-special-member-functions)
 
     [[nodiscard]] operator std::string_view() const {
         return std::string_view{m_str.get(), m_length};
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const cstring& cstr) {
+        return os << std::string_view{cstr};
     }
 
   private:

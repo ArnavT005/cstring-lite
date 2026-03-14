@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <ostream>
 #include <string>
 #include <string_view>
 
@@ -52,6 +53,10 @@ class cstring_view {
 
     [[nodiscard]] constexpr operator std::string_view() const noexcept {
         return m_sv;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, cstring_view csv) {
+        return os << std::string_view{csv};
     }
 
   private:

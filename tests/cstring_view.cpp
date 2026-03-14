@@ -5,6 +5,8 @@
 
 #include <gtest/gtest.h>
 
+#include <sstream>
+
 #include "include/string_utils.hpp"
 
 using namespace std::string_literals;
@@ -153,4 +155,14 @@ TEST(CStringViewTest, MoveAssignmentSelf) {
     EXPECT_FALSE(csv.is_empty());
     EXPECT_STREQ(csv.c_str(), s);
     EXPECT_EQ(csv, std::string_view{s});
+}
+
+TEST(CStringViewTest, StreamInsertion) {
+    constexpr auto csv{"Hello, World!"_csv};
+    const auto str{(std::ostringstream{} << csv).str()};
+
+    EXPECT_EQ(csv.length(), str.length());
+    EXPECT_FALSE(str.empty());
+    EXPECT_STREQ(csv.c_str(), str.c_str());
+    EXPECT_EQ(csv, std::string_view{str});
 }

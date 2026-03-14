@@ -5,6 +5,8 @@
 
 #include <gtest/gtest.h>
 
+#include <sstream>
+
 #include "include/string_utils.hpp"
 
 TEST(CStringTest, FromCString) {
@@ -141,4 +143,16 @@ TEST(CStringTest, MoveAssignmentSelf) {
     EXPECT_FALSE(cstr.is_null());
     EXPECT_STREQ(cstr.c_str(), s);
     EXPECT_EQ(cstr, std::string_view{s});
+}
+
+TEST(CStringTest, StreamInsertion) {
+    constexpr auto s{"Hello, World!"};
+    const tuli::cstring cstr{tuli::owned, strdup(s)};
+    const auto str{(std::ostringstream{} << cstr).str()};
+
+    EXPECT_EQ(cstr.length(), str.length());
+    EXPECT_FALSE(str.empty());
+    EXPECT_FALSE(cstr.is_null());
+    EXPECT_STREQ(cstr.c_str(), str.c_str());
+    EXPECT_EQ(cstr, std::string_view{str});
 }
