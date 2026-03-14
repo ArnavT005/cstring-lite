@@ -27,13 +27,13 @@ jobs:
           with:
             cmake-version: '3.24.x'
         - name: Configure CMake
-          run: >
-            cmake -B ${{ steps.strings.outputs.build-output-dir }}
-                -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-                -DCMAKE_CXX_STANDARD=${{ matrix.cxx_std }}
-                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-                -DCMAKE_BUILD_TESTS=TRUE
-                -DCMAKE_BUILD_EXAMPLES=TRUE
+          run: |
+            cmake -B ${{ steps.strings.outputs.build-output-dir }}  `
+                -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}     `
+                -DCMAKE_CXX_STANDARD=${{ matrix.cxx_std }}          `
+                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}         `
+                -DCMAKE_BUILD_TESTS=TRUE                            `
+                -DCMAKE_BUILD_EXAMPLES=TRUE                         `
                 -S ${{ github.workspace }}
         - name: Build
           run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel
