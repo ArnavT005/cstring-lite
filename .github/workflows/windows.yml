@@ -1,0 +1,45 @@
+name: Windows
+
+on:
+    push:
+        branches: [ "main" ]
+    pull_request:
+        branches: [ "main" ]
+
+jobs:
+    build:
+        runs-on: windows-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                build_type: [Release]
+                cpp_compiler: [cl]
+                cxx_std: [17, 20, 23]
+        steps:
+        - uses: actions/checkout@v4
+        - name: Set reusable strings
+          id: strings
+          shell: bash
+          run: |
+            echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        - name: Setup CMake
+          uses: jwlawson/actions-setup-cmake@v2
+          with:
+            cmake-version: '3.24.x'
+        - name: Configure CMake
+          run: >
+            cmake -B ${{ steps.strings.outputs.build-output-dir }}
+                -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+                -DCMAKE_CXX_STANDARD=${{ matrix.cxx_std }}
+                -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+                -DCMAKE_BUILD_TESTS=TRUE
+                -DCMAKE_BUILD_EXAMPLES=TRUE
+                -S ${{ github.workspace }}
+        - name: Build
+          run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel
+        - name: Run Tests
+          working-directory: ${{ steps.strings.outputs.build-output-dir }}
+          run: ctest --test-dir tests/ -C ${{ matrix.build_type }} --output-on-failure --parallel
+        - name: Run Examples
+          working-directory: ${{ steps.strings.outputs.build-output-dir }}
+          run: ./examples/${{ matrix.build_type }}/examples.exe

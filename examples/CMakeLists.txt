@@ -1,6 +1,10 @@
 add_executable(
-  ${PROJECT_NAME}-examples
-  main.cpp
-  one.cpp
-  two.cpp
+    examples
+    main.cpp
+    one.cpp
+    two.cpp
+)
+
+target_link_libraries(examples PRIVATE
+    ${PROJECT_NAME}
 )

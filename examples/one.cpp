@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <string>
 #include <string_view>
+#include <tuli/cstring_view.hpp>
 
-#include "../include/tuli/cstring_view.hpp"
 #include "include/result.hpp"
 
 namespace examples {

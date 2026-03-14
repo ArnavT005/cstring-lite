@@ -1,8 +1,8 @@
 # cstring-lite
 
-[![tests-multi-platform](https://github.com/ArnavT005/cstring-lite/actions/workflows/tests-multi-platform.yml/badge.svg)](https://github.com/ArnavT005/cstring-lite/actions/workflows/tests-multi-platform.yml)
-[![examples-multi-platform](https://github.com/ArnavT005/cstring-lite/actions/workflows/examples-multi-platform.yml/badge.svg)](https://github.com/ArnavT005/cstring-lite/actions/workflows/examples-multi-platform.yml)
-[![cpp-linter](https://github.com/ArnavT005/cstring-lite/actions/workflows/cpp-linter.yml/badge.svg)](https://github.com/ArnavT005/cstring-lite/actions/workflows/cpp-linter.yml)
+[![Linux](https://github.com/ArnavT005/cstring-lite/actions/workflows/linux.yml/badge.svg)](https://github.com/ArnavT005/cstring-lite/actions/workflows/linux.yml)
+[![macOS](https://github.com/ArnavT005/cstring-lite/actions/workflows/macos.yml/badge.svg)](https://github.com/ArnavT005/cstring-lite/actions/workflows/macos.yml)
+[![Windows](https://github.com/ArnavT005/cstring-lite/actions/workflows/windows.yml/badge.svg)](https://github.com/ArnavT005/cstring-lite/actions/workflows/windows.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A lightweight C++ header-only library for safe and efficient interoperation with C APIs that either accept or return C-style strings.
@@ -24,7 +24,6 @@ Therefore, there is a need for string types that can bridge the gap between stan
 
 To address the challenges outlined above, this repository introduces two types: `tuli::cstring_view` and `tuli::cstring`. These types are designed to safely and efficiently bridge the gap between C++ and C string semantics, making interoperation seamless and less error-prone.
 
-
 ### tuli::cstring_view
 
 A lightweight, *non-owning* view over a null-terminated C-style string. Unlike `std::string_view`, `tuli::cstring_view` guarantees null-termination, making it safe to pass directly to C APIs expecting a null-terminated `const char*` string. It can be constructed from a `const char*`, `std::string`, or a null-terminated `std::string_view` object, and provides utility methods to get the length, check for emptiness, and access the underlying C-style string.
@@ -32,18 +31,21 @@ A lightweight, *non-owning* view over a null-terminated C-style string. Unlike `
 **Key features:**
 - Guarantees null-termination for safe C API interop
 - Non-owning, zero-overhead abstraction
+- Provides `length()`, `is_empty()`, and `c_str()` utility methods
 - Implicit conversion to `std::string_view` for C++ compatibility
+- Stream output support via `operator<<`
 - User-defined literal operator (e.g. `"example"_csv`) for convenient construction
 
 ### template \<class Deleter\> tuli::cstring
 
-An *owning*, RAII-enabled wrapper for heap-allocated C-style strings. This type takes ownership of the `char*` string returned by a C API, manages its lifetime, and ensures proper deallocation upon scope exit. It avoids unnecessary deep copies and memory leaks, while still allowing string operations via implicit conversion to `std::string_view`.
+An *owning*, RAII-enabled wrapper for heap-allocated C-style strings. This type takes ownership of the `char*` string returned by a C API (including `nullptr` if the API signals failure that way), manages its lifetime, and ensures proper deallocation upon scope exit. It avoids unnecessary deep copies and memory leaks, while still allowing string operations via implicit conversion to `std::string_view`.
 
 **Key features:**
 - Owns and manages the lifetime of a heap-allocated `char*` string
 - Move-only semantics to prevent accidental copies
 - Provides `length()`, `is_empty()`, `is_null()`, and `c_str()` utility methods
 - Implicit conversion to `std::string_view` for C++ compatibility
+- Stream output support via `operator<<`
 - Ensures memory is freed automatically, preventing leaks
 
 > [!NOTE]
@@ -52,9 +54,24 @@ An *owning*, RAII-enabled wrapper for heap-allocated C-style strings. This type 
 > [!TIP]
 > Some C APIs also provide custom deallocator methods to free previously allocated `char*` strings. To enable proper cleanup in such cases, a custom deleter type can be passed as the template parameter when using `tuli::cstring`. The requirements for such a deleter are the same as those imposed by the `std::unique_ptr` type.
 
+## Requirements
+
+- A C++ compiler with **C++17** support or higher
+- No external dependencies
+
+## Compatibility
+
+Tested on the following platforms and compilers:
+
+| Platform | Compiler    | C++ Standards       | Compiler Flags                    |
+|----------|-------------|---------------------|-----------------------------------|
+| Linux    | GCC, Clang  | C++17, C++20, C++23 | `-Wall -Wextra -Werror -Wpedantic` |
+| macOS    | Apple Clang | C++17, C++20, C++23 | `-Wall -Wextra -Werror -Wpedantic` |
+| Windows  | MSVC        | C++17, C++20, C++23 | `/W4 /WX /permissive-`            |
+
 ## Installation
 
-Just copy the files present in `include/` directory to your repository's include directory and you are ready to go!  
+Just copy the files present in `include/` directory to your repository's include directory and you are ready to go!
 **No separate compiling/linking required.**
 
 ## Running Tests
@@ -73,10 +90,10 @@ git clone https://github.com/ArnavT005/cstring-lite.git
 cd cstring-lite
 ```
 
-2) Build project with `TULI_ENV_BUILD_TESTS` environment variable set to `TRUE`
+2) Build project with `CMAKE_BUILD_TESTS` CMake option set to `TRUE`
 
 ```
-cmake -B build -DTULI_ENV_BUILD_TESTS=TRUE -S .
+cmake -B build -DCMAKE_BUILD_TESTS=TRUE -S .
 cmake --build build
 ```
 
@@ -92,7 +109,7 @@ ctest --test-dir tests/
 Or run the test binary directly:
 
 ```
-./build/tests/cstring-lite-tests
+./build/tests/tests
 ```
 
 > [!NOTE]
@@ -140,8 +157,8 @@ int main() {
 ```cpp
 #include <string_view>
 
-#include <tuli/cstring>
-#include <tuli/cstring_view>
+#include <tuli/cstring.hpp>
+#include <tuli/cstring_view.hpp>
 
 extern char* some_c_api(const char* str); // returns malloced duplicated 'str'
 
@@ -171,17 +188,17 @@ int main() {
 
 To build and run examples, follow the steps given below: (for prerequisites and cloning instructions, see [Running Tests](#running-tests) section)
 
-1) Build project with `TULI_ENV_BUILD_EXAMPLES` environment variable set to `TRUE`
+1) Build project with `CMAKE_BUILD_EXAMPLES` CMake option set to `TRUE`
 
 ```
-cmake -B build -DTULI_ENV_BUILD_EXAMPLES=TRUE -S .
+cmake -B build -DCMAKE_BUILD_EXAMPLES=TRUE -S .
 cmake --build build
 ```
 
 2) Run the examples
 
 ```
-./build/examples/cstring-lite-examples
+./build/examples/examples
 ```
 
 Expected output:
@@ -196,7 +213,7 @@ Examples ran successfully.
 ## Related Works and Discussion
 
 ### cstring_view
-A number of proposals have been made to introduce a null-terminated `cstring_view` type in the C++ standard library. These include the following: 
+A number of proposals have been made to introduce a null-terminated `cstring_view` type in the C++ standard library. These include the following:
 - [P1402R0](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1402r0.pdf): std::cstring_view - a C compatible std::string_view adapter (*rejected*)
 - [P3655R3](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2025/p3655r3.html): std::cstring_view (proposed for inclusion in *C++29*)
 

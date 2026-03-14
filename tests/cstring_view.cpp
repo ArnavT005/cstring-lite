@@ -1,11 +1,10 @@
 //  SPDX-FileCopyrightText: 2026 Arnav Tuli
 //  SPDX-License-Identifier: MIT
 
-#include "../include/tuli/cstring_view.hpp"
-
 #include <gtest/gtest.h>
 
 #include <sstream>
+#include <tuli/cstring_view.hpp>
 
 #include "include/string_utils.hpp"
 

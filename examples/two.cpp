@@ -1,11 +1,8 @@
-#if !defined(__APPLE__) || !defined(__MACH__)
-#include <string.h>
-#endif
-
+#include <cstring>
 #include <string_view>
+#include <tuli/cstring.hpp>
+#include <tuli/cstring_view.hpp>
 
-#include "../include/tuli/cstring.hpp"
-#include "../include/tuli/cstring_view.hpp"
 #include "include/result.hpp"
 
 namespace examples {
