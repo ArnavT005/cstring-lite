@@ -16,16 +16,12 @@ jobs:
                 cpp_compiler: [clang++]
                 cxx_std: [17, 20, 23]
         steps:
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v5
         - name: Set reusable strings
           id: strings
           shell: bash
           run: |
             echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-        - name: Setup CMake
-          uses: jwlawson/actions-setup-cmake@v2
-          with:
-            cmake-version: '3.24.x'
         - name: Configure CMake
           run: |
             cmake -B ${{ steps.strings.outputs.build-output-dir }}  \

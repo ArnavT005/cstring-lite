@@ -1,5 +1,9 @@
 #include <cstring>
 #include <string_view>
+
+#ifdef _MSC_VER
+#define strdup _strdup
+#endif
 #include <tuli/cstring.hpp>
 #include <tuli/cstring_view.hpp>
 

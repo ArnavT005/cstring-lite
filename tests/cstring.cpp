@@ -7,6 +7,10 @@
 #include <sstream>
 #include <tuli/cstring.hpp>
 
+#ifdef _MSC_VER
+#define strdup _strdup
+#endif
+
 #include "include/string_utils.hpp"
 
 TEST(CStringTest, FromCString) {

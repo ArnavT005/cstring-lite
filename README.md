@@ -80,7 +80,7 @@ This project uses [GoogleTest](https://github.com/google/googletest) to write an
 
 > [!IMPORTANT]
 > **Prerequisites:**
-> - CMake version **3.24** or higher
+> - CMake version **3.14** or higher
 > - A C++ compiler with **C++17** support
 
 1) Clone the repository
